@@ -1,0 +1,468 @@
+
+
+Apuntes de Teórico 
+ 
+PROGRAMACIÓN 3 
+ 
+ 
+Backtracking 
+ 
+ 
+Versión 1.4 
+ Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+
+
+ 
+ 
+
+
+
+
+     2 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+ 
+Índice 
+ 
+Introducción ...................................................................................................................... 4 
+Problema de las n reinas................................................................................................... 4 
+Espacio de soluciones........................................................................................................ 5 
+Colorear un mapa ............................................................................................................. 9 
+Hallar una solución ..................................................................................................................... 10 
+Hallar todas las soluciones.......................................................................................................... 12 
+Hallar la solución con mínima cantidad de colores (óptima) ..................................................... 13 
+Formalización.................................................................................................................. 15 
+Formalización del problema de las n reinas................................................................................ 15 
+Formalización del problema de colorear un mapa con la mínima cantidad de colores .............. 16 
+Suma de subconjuntos .................................................................................................... 17 
+Sobre la implementación de algoritmos de Backtracking........................................... 19 
+Eficiencia .................................................................................................................................... 24 
+ 
+
+
+
+
+     3 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+
+
+Introducción 
+Backtracking  es  una  técnica  de  diseño  de  algoritmos  aplicable  a  problemas  para  los  cuales  se 
+quiere  obtener  un  conjunto  de  soluciones  o  la  solución  óptima  según  ciertas  condiciones.  Esta 
+técnica es una alternativa a la “fuerza bruta” logrando las mismas soluciones de una manera más 
+eficiente. 
+ 
+Para poder aplicar Backtracking la solución al problema se debe poder expresar como una tupla 
+<x1,x2,…,xn>  donde  cada  xi  es  elegido  de  un  conjunto  finito  de  valores.  Estas  tuplas  deben 
+respetar  los  criterios  establecidos  en  el  problema  llamados  RESTRICCIONES  para  ser 
+consideradas  soluciones.  Estos  criterios  dividen  el  ESPACIO  DE  SOLUCIONES,  es  decir  el 
+conjunto de tuplas candidatas en 3 subconjuntos: 
+ 
+  No solución: son las tuplas que no cumplen las restricciones 
+  Solución. Son las tuplas que cumplen las restricciones. 
+  Óptimas.  Son  las  tuplas  solución  que  son  óptimas  (en  el  caso  de  problemas  de 
+optimización) 
+ 
+Los algoritmos basados en Backtracking proceden construyendo la tupla solución componente a 
+componente y evaluando si el prefijo de tupla que se tiene en cada momento tiene posibilidades 
+de  conducir  a  una  tupla  solución,  si  no  existe  tal  posibilidad  se  descarta  el  valor  de  dicha 
+componente  y  se  analiza  con  otro  valor  para  la  misma.  Si  no  quedan  valores  para  dicha 
+componente se descarta el valor de la penúltima componente y se sigue de esta forma hasta agotar 
+el espacio de soluciones. 
+ 
+
+
+Problema de las n reinas 
+Se  trata  de  ubicar  n  reinas  en  un  tablero  de  ajedrez  de  tamaño  nxn  de  forma  tal  que  dos  reinas 
+cualesquiera  no  puedan  comerse  entre  sí,  es  decir  que  no  estén  en  la  misma  fila,  columna  o 
+diagonal. 
+ 
+2
+En  el  tablero  hay  n   casillas  y  se  deben  elegir  subconjuntos  de  n  casillas.  Una  posibilidad  es 
+escribir un algoritmo que genere todos los subconjuntos de n casillas (observar que la cantidad de 
+2
+n
+subconjuntos es  C ) y que seleccione aquellos subconjuntos que cumplen las restricciones dadas.      n
+
+
+ 
+Un algoritmo con estas características es conocido como un algoritmo de FUERZA BRUTA. 
+64
+Puede observarse que si n = 8 hay  C = 4420000000  subconjuntos, lo cual hace que el algoritmo     8
+
+
+deba  generar  todos  estos  subconjuntos  (si  se  quieren  todas  las  soluciones)  y  chequearlos  uno  a 
+uno. 
+ 
+Si se numeran las filas, las columnas y las reinas de 1 a n se puede asumir, sin perder generalidad, 
+que como cada reina debe estar en una fila diferente entonces la reina i se colocará en la fila i, de 
+esta  manera  las  soluciones  al  problema  de  las  n  reinas  pueden  ser  representadas  por  una  tupla 
+<x1,x2,…,xn> donde xi es la columna en la cual debe ser colocada la reina i, es decir que la reina i 
+se  colocará en  la  casilla (i,  xi)  del  tablero.  De esta  forma  para  cada  xi  de la  tupla  hay  n  valores 
+n 8
+posibles  con  lo  cual  la  cantidad  de  tuplas  candidatas  es  n .  En  el  caso  de  n  =  8  serían  8   =  16 
+millones  de  tuplas.  Este  enfoque  es  sustancialmente  mejor  que  el  anterior  dado  que  reduce  la 
+cantidad de tuplas a generar y es la base para aplicar Backtracking, el cuál como se verá permite 
+reducir aún más la cantidad de tuplas a generar. 
+ 
+
+
+
+
+     4 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+
+
+Espacio de soluciones 
+En el ejemplo de las n reinas, con n = 4, las tuplas candidatas son las tuplas <x1,x2,x3,x4> donde 
+cada  xi  toma  valores  en  el  conjunto  {1,2,3,4}.  Se  denomina  ESPACIO  DE  SOLUCIONES  al 
+conjunto de todas las tuplas que cumplen lo anterior. 
+ 
+Un  algoritmo  basado  en  Backtracking  determina  la  o  las  soluciones  al  problema  recorriendo 
+sistemáticamente  el  espacio  de  soluciones,  este  recorrido  se  puede  visualizar  organizando  el 
+espacio de soluciones mediante un árbol llamado ÁRBOL DE SOLUCIONES. 
+Una visualización, para n = 4, del árbol de soluciones es la que se muestra en la figura 1. 
+<0,0,0,0> 
+ 
+ 
+ 
+<1,0,0,0>     <2,0,0,0>     <3,0,0,0>     <4,0,0,0> 
+ 
+ 
+ 
+<1,1,0,0>     <1,2,0,0>     <1,3,0,0>     <1,4,0,0>           
+ 
+ 
+ 
+<1,1,1,0>     <1,1,2,0>     …                               
+ 
+ 
+ 
+<1,1,1,1>     <1,1,1,2>     <1,1,1,3>     <1,1,1,4>                          
+ 
+Figura 1 
+ 
+Se utilizará el valor 0 para indicar que no hay una reina colocada en la columna correspondiente. 
+Cada  nodo  del  árbol  de  soluciones  define  un  ESTADO  DEL  PROBLEMA.  Un  estado  del 
+problema  S  es  un  ESTADO  DEL  ESPACIO  DE  SOLUCIONES    si  el  camino  desde  la  raíz 
+(<0,0,0,0>) al estado S define una tupla del espacio de soluciones (en el árbol de la figura 1 son 
+las hojas). 
+ 
+Un  estado  del  espacio  de  soluciones  es  un  ESTADO  SOLUCIÓN  si  el  mismo  cumple  las 
+restricciones  del  problema  (en  el  árbol  de  la  figura  1  son  las  hojas  que  representan  una 
+configuración  del  tablero  donde  2  reinas  cualesquiera  no  están  en  la  misma  fila,  columna  o 
+diagonal). 
+ 
+4
+Se observa que para n=4 hay 4 =256 tuplas, sin embargo cuando un estado del problema (tupla en 
+construcción) no cumple las restricciones no tiene sentido seguir generando dicha tupla dado que 
+no conducirá a un estado solución, como se muestra en la figura 2. 
+ 
+
+
+
+
+     5 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+<0,0,0,0> 
+ 
+ 
+ 
+<1,0,0,0>           
+ 
+Hay 2 reinas en la          Hay 2 reinas en la 
+misma columna          misma diagonal 
+<1,1,0,0>          <1,2,0,0>           
+ 
+Figura 2. 
+ 
+La  visualización  en  forma  de  árbol  del  espacio  de  soluciones  permite  definir  cómo  se  pueden 
+generar los estados del problema de forma sistemática. En particular Backtracking implementa la 
+generación de los estados de la siguiente manera: 
+ 
+Se comienza con el estado raíz <0,0,0,0> (que representa la situación en la cual no se ha colocado 
+ninguna  reina  en  el  tablero)  y  en  un  paso  posterior,  estando  en  un  estado  R  se  expande  dicho 
+estado, o sea se generan los hijos de R. Cada vez que se genera un hijo C de R, C se convierte en 
+el estado actual y se lo expande. R volverá a ser el estado actual en expansión cuando el subárbol 
+de raíz C haya sido generado completamente. 
+ 
+Notar  que  la  forma  de  implementar  la  generación  de  los  estados  corresponde  a  una  generación 
+DFS  de  los  estados  del  problema.  Esto  implica  que  las  tuplas  se  generan  componente  a 
+componente y que para cada prefijo de tupla generado se verifica si cumple las restricciones, si no 
+las verifica no se sigue generando dicha tupla y se vuelve a al estado anterior. Backtracking no 
+implementa el árbol de soluciones, solamente genera sus estados. 
+ 
+A continuación se verá detalladamente como genera Backtracking los estados para el problema de 
+las n reinas en el caso n = 4 considerando el árbol de soluciones parcial de la figura 3. 
+ 
+<0,0,0,0> 
+ 
+ 
+ 
+<1,0,0,0>                          
+ 
+ 
+ 
+<1,1,0,0>     <1,2,0,0>     <1,3,0,0>     <1,4,0,0>                     
+ 
+ 
+ 
+<1,3,1,0>  <1,3,2,0>  <1,3,3,0>  <1,3,4,0>  <1,4,1,0>  <1,4,2,0>  <1,4,3,0>  <1,4,4,0> 
+ 
+ 
+ 
+<1,4,2,1>     <1,4,2,2>     <1,4,2,3>      <1,4,2,4> 
+ 
+Figura 3. 
+ 
+
+
+
+
+     6 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+Se comienza con el estado raíz <0,0,0,0>. Este estado es el actual y se expande. Primero se genera 
+el hijo <1,0,0,0> que se convierte en el estado actual y se expande; se genera el estado <1,1,0,0>. 
+Este estado no cumple con la restricción de que dos reinas estén en distinta columna por lo que no 
+se expande, lo cual significa que no se generan más tuplas con el prefijo <1,1,0,0>. El algoritmo 
+vuelve  hacia  atrás  al  estado  <1,0,0,0>  y  se  genera  el  estado  <1,2,0,0>  el  cual  tampoco  es 
+expandido  por  no  cumplir  la  restricción  de  que  dos  reinas  estén  en  distinta  diagonal.  Se  vuelve 
+hacia  atrás  al  estado  <1,0,0,0>  y  se  genera  el  estado  <1,3,0,0>  el  cual  corresponde  a  la 
+configuración del tablero: 
+ 
+X                
+          X      
+                
+                
+ 
+y  cumple las restricciones. 
+ 
+A continuación se genera el estado <1,3,1,0> que no cumple con la restricción de que dos reinas 
+estén  en  distinta  columna  por  lo  que  no  se  expande.  El  algoritmo  vuelve  hacia  atrás  al  estado 
+<1,3,0,0>  y  se  genera  el  estado  <1,3,2,0>  el  cual  tampoco  es  expandido  por  no  cumplir  la 
+restricción de que dos reinas estén en distinta diagonal. 
+ 
+El  algoritmo  vuelve  hacia  atrás  al  estado  <1,3,0,0>  y  se  genera  el  estado  <1,3,3,0>  el  cual 
+tampoco es expandido por no cumplir la restricción de que dos reinas estén en distinta columna. 
+ 
+El  algoritmo  vuelve  hacia  atrás  al  estado  <1,3,0,0>  y  se  genera  el  estado  <1,3,4,0>  el  cual 
+tampoco es expandido por no cumplir la restricción de que dos reinas estén en distinta diagonal. 
+ 
+Al  haber  eliminado  todas  las  posibilidades  para el  estado  <1,3,0,0>  se  retrocede  nuevamente  al 
+estado  <1,0,0,0>  y  se  genera  el  estado  <1,4,0,0>  el  cual  como  puede  observarse  en  el  árbol, 
+tampoco conducirá a una solución, por lo que al haberse examinado todas las posibilidades para el 
+estado  <1,0,0,0>  sin  llegar  a  una  solución  se  vuelve  al  estado  anterior  que  es  la  raíz  del  árbol 
+(<0,0,0,0>). 
+ 
+<0,0,0,0>                          
+ 
+ 
+ 
+<2,0,0,0>                     
+ 
+ 
+ 
+<2,1,0,0>     <2,2,0,0>     <2,3,0,0>     <2,4,0,0>                
+ 
+ 
+ 
+<2,4,1,0>     <2,4,2,0>     <2,4,3,0>     <2,4,4,0> 
+ 
+ 
+ 
+<2,4,1,1>     <2,4,1,2>     <2,4,1,3>     <2,4,1,4>                
+ 
+Figura 4. 
+
+
+
+
+     7 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+ 
+Se  genera  el  estado  <2,0,0,0>  como  se  muestra  en  la  figura  4.  De  sus  hijos  solo  el  <2,4,0,0> 
+representa una configuración del tablero que cumple las restricciones: 
+ 
+     X        
+               X 
+                
+                
+ 
+Este estado pasa a ser el estado actual y se genera el <2,4,1,0> que corresponde a la configuración 
+del tablero: 
+ 
+     X        
+               X 
+X             
+                
+ 
+que también cumple las restricciones. 
+ 
+Luego se generan los nodos <2,4,1,1> que no cumple las restricciones y el <2,4,1,2> que tampoco 
+cumple  las  restricciones.  Posteriormente  se  genera  el  estado  <2,4,1,3>  que  corresponde  a  la 
+configuración del tablero: 
+ 
+     X        
+               X 
+X             
+          X   
+ 
+En este momento al haberse colocado todas las reinas en una configuración en la cual no pueden 
+comerse entre sí, se ha llegado a un estado solución el cual corresponde a una tupla solución al 
+problema.  El  algoritmo  puede  finalizar  si  se  quería  encontrar  una    solución  o  continuar  si  se 
+desean encontrar más soluciones (o todas ellas). 
+ 
+4
+Notar  además  como  la  cantidad  de  tuplas  generadas  es  menor  que  256  tuplas  (n )  dado  que  al 
+verificar  que  dos  reinas  estén  en  distinta  columna  se  generan  solamente  tuplas  que  son 
+permutaciones de la tupla <1,2,3,4> dado que los valores de las componentes deben ser distintos 
+entre  sí;  entonces  se  generan  a  los  sumo  4!  =  24  tuplas,  algunas  de  las  cuales  tampoco  serán 
+generadas al verificarse la restricción de que dos reinas estén en distinta diagonal. 
+ 
+
+
+
+
+     8 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+
+
+Colorear un mapa  
+El  problema  a  resolver  consiste  en  colorear  un  mapa  de  forma  tal  que  2  países  con  frontera  no 
+tengan el mismo color. 
+ 
+Por ejemplo, considerando el mapa: 
+ 
+ 
+ 
+0     3 
+ 
+ 
+ 
+1
+2
+
+
+4 
+
+
+5 
+ 
+se lo puede representar mediante un grafo no dirigido donde cada vértice representa un país y 2 
+vértices son adyacentes si los países correspondientes tienen frontera. 
+ 
+ 
+ 
+ 
+
+
+0 
+3 
+
+
+5 
+ 
+ 
+ 
+2 
+ 
+ 
+     1     4 
+ 
+ 
+Suponiendo que se dispone de k colores numerados de 1 a k la solución se puede expresar como 
+una tupla <xo,x1,…,xn-1> donde  x ∈1..k  para 0 ≤ i ≤ n-1, con n = |V|     i
+
+
+ 
+La figura 5 muestra una organización en forma de árbol para el espacio de soluciones: 
+ 
+<0,0,…,0> 
+ 
+ 
+ 
+<1,0,…,0>          <2,0,…,0>     …     <k,0,…,0>      
+ 
+ 
+ 
+<x0,…,xi,0,…,0> 
+ 
+ 
+ 
+<x0,…,xi,…,xn-1> 
+Figura 5. 
+ 
+Se  utilizará  el  valor  0  para  indicar  que  no  se  ha  asignado  un  color  a  un  vértice.    El  espacio  de 
+soluciones está formado por las hojas del árbol. 
+ 
+Se verán 3 variantes de aplicación de la técnica de Backtracking: 
+
+
+
+
+     9 Apuntes de Teórico de  Programación 3 – Backtracking 
+
+
+ 
+1.  Encontrar una solución 
+2.  Encontrar todas las soluciones 
+3.  Encontrar la solución que minimiza la cantidad de colores utilizados 
+ 
+
+
+Hallar una solución 
+En  un  determinado  momento,  el  algoritmo  recibe  una  tupla  en  construcción  parcialmente 
+coloreada (colores asignados a algunas componentes) y debe verificar si cumple las restricciones 
+del  problema.  Si  las  cumple  se  controla  si  es  solución,  si  lo  es  se  utiliza  una  variable  booleana 
+para indicar que se ha encontrado una solución y que el algoritmo debe finalizar. 
+ 
+Son necesarios además parámetros para devolver la tupla solución y para indicar a partir de que 
+posición se debe seguir coloreando la tupla en construcción. 
+ 
+void colorear(int *tupla, int i, bool &encontre, int *sol)  
+{ 
+     int color; 
+     if (verificaRest(tupla, i)) 
+     { 
+          if (esSolucion(tupla, i)) 
+{ 
+               encontre = true; 
+               copiar(sol, tupla);  
+          } else 
+{ 
+               color = 1; 
+               while ((color <= k) && (!encontre)) 
+{ 
+                    tupla[i] = color; 
+                    colorear(tupla, i+1, encontre, sol); 
+                    color++; 
+               } 
+          } 
+ 
+} 
+} 
+ 
+-  i es la posición a partir de la cual colorear. 
+-  tupla es la tupla que se construye. 
+-  encontre indica si se encontró una solución. 
+-  sol es la tupla solución que se devuelve. 
+ 
+Notar  que  la  iteración  con  la  llamada  recursiva  genera  la  tupla  en  profundidad,  o  sea  mediante 
+DFS. 
+ 
+La función verificaRest evalúa si la tupla tupla cumple las restricciones (dos adyacentes 
+no tienen el mismo color). Toma en cuenta solo los elementos de la tupla hasta la posición i. 
+ 
+
+
+
+
+     10 
